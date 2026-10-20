@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Data table with search and sort - Plan Your Day">
+    <title>Plan Your Day - Data Table</title>
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+
+<body>
+
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <h1>Plan Your Day</h1>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+        <nav aria-label="Main navigation">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="components.html">Components</a>
+            <a href="registration.html">Register</a>
+            <a href="data.html" aria-current="page">Data</a>
+        </nav>
+    </header>
+
+    <main id="main" role="main">
+
+        <h2>People Directory</h2>
+        <p>Search and sort through a list of people.</p>
+
+        <div class="field">
+            <label for="search-input">Search:</label>
+            <input type="search" id="search-input" placeholder="Type to filter by name, age, or city...">
+        </div>
+
+        <div class="demo-row">
+            <button type="button" class="btn" id="sort-name">Sort by Name</button>
+            <button type="button" class="btn" id="sort-age">Sort by Age</button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <caption>List of people</caption>
+                <thead>
+                    <tr><th scope="col">Name</th><th scope="col">Age</th><th scope="col">City</th></tr>
+                </thead>
+                <tbody id="data-body"></tbody>
+            </table>
+        </div>
+
+        <p id="empty-message" class="center" hidden>No results found.</p>
+
+    </main>
+
+    <footer role="contentinfo"><p>&copy; 2026 Plan Your Day</p></footer>
+
+    <script>
+    (function () {
+        var html = document.documentElement;
+        var btn = document.getElementById('theme-toggle');
+        var saved = localStorage.getItem('theme');
+        if (saved === 'dark') html.classList.add('dark');
+        else if (saved === 'light') html.classList.add('light');
+        function updateIcon() {
+            var isDark = html.classList.contains('dark') ||
+                (!html.classList.contains('light') &&
+                 window.matchMedia('(prefers-color-scheme: dark)').matches);
+            btn.textContent = isDark ? '☀️' : '🌙';
+        }
+        btn.addEventListener('click', function () {
+            var isDarkNow = html.classList.contains('dark') ||
+                (!html.classList.contains('light') &&
+                 window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDarkNow) {
+                html.classList.remove('dark'); html.classList.add('light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.remove('light'); html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateIcon();
+        });
+        updateIcon();
+    })();
+    </script>
+
+    <script>
+    (function () {
+        var people = [
+            { name: 'Ahmed Ali',   age: 25, city: 'Cairo' },
+            { name: 'Sara Hassan', age: 30, city: 'Alexandria' },
+            { name: 'Omar Khaled', age: 22, city: 'Giza' },
+            { name: 'Mona Youssef', age: 28, city: 'Cairo' },
+            { name: 'Youssef Adel', age: 35, city: 'Mansoura' },
+            { name: 'Laila Sameh',  age: 19, city: 'Aswan' },
+            { name: 'Kareem Nabil', age: 41, city: 'Luxor' },
+            { name: 'Nour Hanan',   age: 26, city: 'Alexandria' },
+            { name: 'Tarek Samir',  age: 33, city: 'Cairo' },
+            { name: 'Hana Mostafa', age: 24, city: 'Giza' }
+        ];
+
+        var tbody = document.getElementById('data-body');
+        var emptyMsg = document.getElementById('empty-message');
+        var searchInput = document.getElementById('search-input');
+
+        function render(data) {
+            tbody.innerHTML = '';
+            if (data.length === 0) { emptyMsg.hidden = false; return; }
+            emptyMsg.hidden = true;
+            data.forEach(function (p) {
+                var tr = document.createElement('tr');
+                var td1 = document.createElement('td'); td1.textContent = p.name;
+                var td2 = document.createElement('td'); td2.textContent = p.age;
+                var td3 = document.createElement('td'); td3.textContent = p.city;
+                tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+                tbody.appendChild(tr);
+            });
+        }
+
+        searchInput.addEventListener('input', function () {
+            var q = this.value.toLowerCase().trim();
+            var filtered = people.filter(function (p) {
+                return p.name.toLowerCase().includes(q) ||
+                       String(p.age).includes(q) ||
+                       p.city.toLowerCase().includes(q);
+            });
+            render(filtered);
+        });
+
+        document.getElementById('sort-name').addEventListener('click', function () {
+            people.sort(function (a, b) { return a.name.localeCompare(b.name); });
+            searchInput.dispatchEvent(new Event('input'));
+        });
+
+        document.getElementById('sort-age').addEventListener('click', function () {
+            people.sort(function (a, b) { return a.age - b.age; });
+            searchInput.dispatchEvent(new Event('input'));
+        });
+
+        render(people);
+    })();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create your account - Plan Your Day">
+    <title>Plan Your Day - Register</title>
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+
+<body>
+
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <h1>Plan Your Day</h1>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+        <nav aria-label="Main navigation">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="components.html">Components</a>
+            <a href="registration.html" aria-current="page">Register</a>
+            <a href="data.html">Data</a>
+        </nav>
+    </header>
+
+    <main id="main" role="main">
+
+        <h2>Create Your Account</h2>
+        <p>Fill the form below to register.</p>
+
+        <div id="form-alert" class="alert alert-error" role="alert" hidden></div>
+
+        <form id="register-form" action="#" method="post" novalidate>
+
+            <div class="field">
+                <label for="reg-name">Name:</label>
+                <input type="text" id="reg-name" name="name" autocomplete="name">
+                <span class="field-error" id="error-name" role="alert"></span>
+            </div>
+
+            <div class="field">
+                <label for="reg-email">Email:</label>
+                <input type="email" id="reg-email" name="email" autocomplete="email">
+                <span class="field-error" id="error-email" role="alert"></span>
+            </div>
+
+            <div class="field">
+                <label for="reg-password">Password:</label>
+                <input type="password" id="reg-password" name="password" autocomplete="new-password">
+                <span class="field-error" id="error-password" role="alert"></span>
+            </div>
+
+            <div class="field">
+                <label for="reg-confirm">Confirm Password:</label>
+                <input type="password" id="reg-confirm" name="confirm" autocomplete="new-password">
+                <span class="field-error" id="error-confirm" role="alert"></span>
+            </div>
+
+            <div class="field">
+                <label for="reg-age">Age:</label>
+                <input type="number" id="reg-age" name="age" min="1" max="120">
+                <span class="field-error" id="error-age" role="alert"></span>
+            </div>
+
+            <button type="submit" class="btn">Register</button>
+
+        </form>
+
+        <div id="success-message" class="alert alert-success" role="status" hidden>
+            <strong>Success:</strong>&nbsp;Your account has been registered!
+        </div>
+
+    </main>
+
+    <footer role="contentinfo"><p>&copy; 2026 Plan Your Day</p></footer>
+
+    <script>
+    (function () {
+        var html = document.documentElement;
+        var btn = document.getElementById('theme-toggle');
+        var saved = localStorage.getItem('theme');
+        if (saved === 'dark') html.classList.add('dark');
+        else if (saved === 'light') html.classList.add('light');
+        function updateIcon() {
+            var isDark = html.classList.contains('dark') ||
+                (!html.classList.contains('light') &&
+                 window.matchMedia('(prefers-color-scheme: dark)').matches);
+            btn.textContent = isDark ? '☀️' : '🌙';
+        }
+        btn.addEventListener('click', function () {
+            var isDarkNow = html.classList.contains('dark') ||
+                (!html.classList.contains('light') &&
+                 window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDarkNow) {
+                html.classList.remove('dark'); html.classList.add('light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.remove('light'); html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateIcon();
+        });
+        updateIcon();
+    })();
+    </script>
+
+    <script>
+    (function () {
+        var form = document.getElementById('register-form');
+        var fields = {
+            name:     { input: document.getElementById('reg-name'),     err: document.getElementById('error-name') },
+            email:    { input: document.getElementById('reg-email'),    err: document.getElementById('error-email') },
+            password: { input: document.getElementById('reg-password'), err: document.getElementById('error-password') },
+            confirm:  { input: document.getElementById('reg-confirm'),  err: document.getElementById('error-confirm') },
+            age:      { input: document.getElementById('reg-age'),      err: document.getElementById('error-age') }
+        };
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        function setError(field, message) {
+            field.err.textContent = message;
+            field.err.style.display = message ? 'block' : 'none';
+            field.input.setAttribute('aria-invalid', message ? 'true' : 'false');
+        }
+
+        function validate() {
+            var ok = true;
+
+            if (!fields.name.input.value.trim()) {
+                setError(fields.name, 'Name is required.'); ok = false;
+            } else if (fields.name.input.value.trim().length < 3) {
+                setError(fields.name, 'Name must be at least 3 characters.'); ok = false;
+            } else { setError(fields.name, ''); }
+
+            if (!fields.email.input.value.trim()) {
+                setError(fields.email, 'Email is required.'); ok = false;
+            } else if (!emailRegex.test(fields.email.input.value.trim())) {
+                setError(fields.email, 'Please enter a valid email address.'); ok = false;
+            } else { setError(fields.email, ''); }
+
+            if (!fields.password.input.value) {
+                setError(fields.password, 'Password is required.'); ok = false;
+            } else if (fields.password.input.value.length < 8) {
+                setError(fields.password, 'Password must be at least 8 characters.'); ok = false;
+            } else { setError(fields.password, ''); }
+
+            if (!fields.confirm.input.value) {
+                setError(fields.confirm, 'Please confirm your password.'); ok = false;
+            } else if (fields.confirm.input.value !== fields.password.input.value) {
+                setError(fields.confirm, 'Passwords do not match.'); ok = false;
+            } else { setError(fields.confirm, ''); }
+
+            var age = parseInt(fields.age.input.value, 10);
+            if (!fields.age.input.value) {
+                setError(fields.age, 'Age is required.'); ok = false;
+            } else if (isNaN(age) || age < 1 || age > 120) {
+                setError(fields.age, 'Age must be between 1 and 120.'); ok = false;
+            } else { setError(fields.age, ''); }
+
+            return ok;
+        }
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            Object.keys(fields).forEach(function (k) { setError(fields[k], ''); });
+            document.getElementById('form-alert').hidden = true;
+
+            if (!validate()) {
+                var banner = document.getElementById('form-alert');
+                banner.textContent = 'Please fix the errors above and try again.';
+                banner.hidden = false;
+                var first = Object.keys(fields).find(function (k) {
+                    return fields[k].input.getAttribute('aria-invalid') === 'true';
+                });
+                if (first) fields[first].input.focus();
+                return;
+            }
+
+            document.getElementById('success-message').hidden = false;
+            form.reset();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        Object.keys(fields).forEach(function (k) {
+            fields[k].input.addEventListener('input', function () {
+                setError(fields[k], '');
+            });
+        });
+    })();
+    </script>
+
+</body>
+</html>
